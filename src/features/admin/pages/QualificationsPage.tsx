@@ -1,19 +1,13 @@
-import { Award } from 'lucide-react'
-
-import AdminPlaceholderPage from '@/features/admin/components/AdminPlaceholderPage'
+import { MasterDataListPage } from '@/features/admin/components/MasterDataListPage'
 
 export default function QualificationsPage() {
   return (
-    <AdminPlaceholderPage
-      icon={Award}
-      title="Qualifications"
-      description="The qualification types teachers can hold, used during verification."
-      bullets={[
-        'Manage recognised qualification types',
-        'Set required qualifications per subject',
-        'Map qualifications to verification rules',
-        'Review which teachers hold each qualification',
-      ]}
+    <MasterDataListPage
+      kind="qualifications"
+      noun="qualification type"
+      caption="Qualification types"
+      searchPlaceholder="Search qualifications by name…"
+      nameHeader="Qualification"
     />
   )
 }
