@@ -11,6 +11,16 @@ import RegisterPage from '@/pages/RegisterPage'
 import StudentPage from '@/pages/StudentPage'
 import TeacherPage from '@/pages/TeacherPage'
 
+import AdminGuard from '@/features/admin/components/AdminGuard'
+import AdminDashboardPage from '@/features/admin/pages/AdminDashboardPage'
+import AdminSettingsPage from '@/features/admin/pages/AdminSettingsPage'
+import QualificationsPage from '@/features/admin/pages/QualificationsPage'
+import StudentsPage from '@/features/admin/pages/StudentsPage'
+import SubjectsPage from '@/features/admin/pages/SubjectsPage'
+import TeacherDetailsPage from '@/features/admin/pages/TeacherDetailsPage'
+import TeachersPage from '@/features/admin/pages/TeachersPage'
+import VerificationQueuePage from '@/features/admin/pages/VerificationQueuePage'
+
 /**
  * Routes that are linked from the navbar/footer but whose full designs
  * land in a later milestone. They render an honest placeholder page.
@@ -79,6 +89,26 @@ export const router = createBrowserRouter([
         path: path.slice(1),
         element: <PlaceholderPage {...props} />,
       })),
+      { path: '*', element: <NotFoundPage /> },
+    ],
+  },
+  {
+    /*
+     * Admin panel — guarded by AdminGuard, which verifies the bearer token
+     * via GET /auth/me and requires the Admin role before rendering the
+     * AdminLayout shell (the layout hosts the <Outlet/> for these children).
+     */
+    path: '/admin',
+    element: <AdminGuard />,
+    children: [
+      { index: true, element: <AdminDashboardPage /> },
+      { path: 'teachers', element: <TeachersPage /> },
+      { path: 'teachers/:teacherId', element: <TeacherDetailsPage /> },
+      { path: 'verification-queue', element: <VerificationQueuePage /> },
+      { path: 'students', element: <StudentsPage /> },
+      { path: 'subjects', element: <SubjectsPage /> },
+      { path: 'qualifications', element: <QualificationsPage /> },
+      { path: 'settings', element: <AdminSettingsPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

@@ -1,7 +1,9 @@
-import { LogIn } from 'lucide-react'
+import { Loader2, LogIn } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
+import { login } from '@/common/api/auth.api'
+import { isApiError } from '@/common/api/http'
 import { AuthNotice, AuthShell } from '@/common/components/AuthShell'
 import { PasswordField, TextField } from '@/common/components/FormTextField'
 import { Button } from '@/common/ui/button'
@@ -12,6 +14,11 @@ interface LoginForm {
 }
 
 type LoginFormErrors = Partial<Record<keyof LoginForm, string>>
+
+/** Flash message set by RegisterPage after a successful signup. */
+interface LoginLocationState {
+  notice?: string
+}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -29,20 +36,43 @@ function validate(form: LoginForm): LoginFormErrors {
 }
 
 export default function LoginPage() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const registrationNotice =
+    (location.state as LoginLocationState | null)?.notice ?? null
+
   const [form, setForm] = useState<LoginForm>({ email: '', password: '' })
   const [errors, setErrors] = useState<LoginFormErrors>({})
-  const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
 
   const update = (key: keyof LoginForm) => (value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }))
     setErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev))
+    setFormError(null)
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
     const nextErrors = validate(form)
     setErrors(nextErrors)
-    setSubmitted(Object.keys(nextErrors).length === 0)
+    if (Object.keys(nextErrors).length > 0) return
+
+    setSubmitting(true)
+    setFormError(null)
+
+    try {
+      // Persists the access token in localStorage; the refresh_token cookie
+      // is stored by the browser automatically.
+      await login(form.email.trim(), form.password)
+      navigate('/', { replace: true })
+    } catch (error) {
+      if (isApiError(error)) setFormError(error.message)
+      else setFormError('Something went wrong. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -61,6 +91,8 @@ export default function LoginPage() {
       }
     >
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+        {registrationNotice ? <AuthNotice>{registrationNotice}</AuthNotice> : null}
+
         <TextField
           name="email"
           label="Email"
@@ -94,18 +126,30 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <Button type="submit" size="lg" className="mt-1 w-full">
-          Log In
-          <LogIn aria-hidden="true" className="size-4" />
+        <Button type="submit" size="lg" className="mt-1 w-full" disabled={submitting}>
+          {submitting ? (
+            <>
+              Logging in…
+              <Loader2 aria-hidden="true" className="size-4 animate-spin" />
+            </>
+          ) : (
+            <>
+              Log In
+              <LogIn aria-hidden="true" className="size-4" />
+            </>
+          )}
         </Button>
 
-        {submitted ? (
-          <AuthNotice>
-            You're signed in (demo only). No backend is connected yet, so no credentials were stored or sent anywhere.
-          </AuthNotice>
+        {formError ? (
+          <p
+            role="alert"
+            className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive"
+          >
+            {formError}
+          </p>
         ) : (
           <p className="text-center text-xs text-muted-foreground">
-            Demo form — submissions stay in your browser until a backend is connected.
+            By logging in you agree to our Terms and Privacy Policy.
           </p>
         )}
       </form>
