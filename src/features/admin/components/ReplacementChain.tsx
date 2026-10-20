@@ -2,6 +2,7 @@ import { FileText, GitCompareArrows, Undo2 } from 'lucide-react'
 
 import { cn } from '@/common/lib/utils'
 import { formatDateTime } from '@/features/admin/lib/format'
+import { classifyChainRole, type ChainRole } from '@/features/admin/lib/verificationRules'
 import { DocumentStatusBadge } from '@/features/admin/components/DocumentStatusBadge'
 import type { QualificationUpload } from '@/features/admin/api/adminVerification.api'
 
@@ -15,19 +16,7 @@ export interface ReplacementChainProps {
   className?: string
 }
 
-/** Classifies an upload within its replacement chain. */
-function chainRole(
-  upload: QualificationUpload,
-  uploads: QualificationUpload[],
-): 'original' | 'replacement' | 'superseded' {
-  // Superseded if a later upload points at this doc_id.
-  const isSuperseded = uploads.some((other) => other.supersedes_document_id === upload.doc_id)
-  if (isSuperseded) return 'superseded'
-  if (upload.supersedes_document_id != null) return 'replacement'
-  return 'original'
-}
-
-const ROLE_BADGE: Record<'original' | 'replacement' | 'superseded', { label: string; className: string }> = {
+const ROLE_BADGE: Record<ChainRole, { label: string; className: string }> = {
   original: { label: 'Original', className: 'border-border bg-muted text-muted-foreground' },
   replacement: { label: 'Replacement', className: 'border-violet-200 bg-violet-50 text-violet-700' },
   superseded: { label: 'Superseded', className: 'border-amber-200 bg-amber-50 text-amber-700' },
@@ -47,7 +36,7 @@ export function ReplacementChain({ uploads, onSelectUpload, selectedDocId, class
   return (
     <ol className={cn('flex flex-col gap-3', className)}>
       {uploads.map((upload) => {
-        const role = chainRole(upload, uploads)
+        const role = classifyChainRole(upload, uploads)
         const roleBadge = ROLE_BADGE[role]
         const isSelected = selectedDocId === upload.doc_id
         return (

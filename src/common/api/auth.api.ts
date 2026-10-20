@@ -56,3 +56,15 @@ export async function login(email: string, password: string): Promise<ApiSuccess
 export function getMe<T = Record<string, unknown>>(): Promise<ApiSuccess<T>> {
   return apiGet<T>('/auth/me')
 }
+
+/**
+ * Authenticated user's role (GET /auth/role).
+ *
+ * The backend returns the role as a **plain JSON string** (e.g. `"Admin"`),
+ * not an object — the payload is passed through untouched so the caller
+ * can parse it with `parseRoleResponse`. Rejects with 401 `ApiError` when
+ * the token is missing, malformed, or expired.
+ */
+export function getRole(): Promise<ApiSuccess<unknown>> {
+  return apiGet<unknown>('/auth/role')
+}

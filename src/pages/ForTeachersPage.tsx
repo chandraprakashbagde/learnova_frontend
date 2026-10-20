@@ -29,7 +29,7 @@ const TEACHER_HIGHLIGHTS = [
   },
 ]
 
-export default function TeacherPage() {
+export default function ForTeachersPage() {
   return (
     <>
       <section className="relative overflow-hidden">

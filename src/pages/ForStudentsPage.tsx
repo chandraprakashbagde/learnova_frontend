@@ -24,7 +24,7 @@ const STUDENT_HIGHLIGHTS = [
   },
 ]
 
-export default function StudentPage() {
+export default function ForStudentsPage() {
   return (
     <>
       <section className="relative overflow-hidden">

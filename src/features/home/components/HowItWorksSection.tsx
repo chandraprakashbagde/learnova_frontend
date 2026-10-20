@@ -141,7 +141,7 @@ export function HowItWorksSection() {
             title="For Teachers"
             subtitle="From idea to classroom"
             ctaLabel="Start Teaching"
-            to="/teacher"
+            to="/for-teachers"
             steps={TEACHER_STEPS}
           />
         </div>

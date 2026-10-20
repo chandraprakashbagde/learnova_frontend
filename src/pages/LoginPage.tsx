@@ -2,11 +2,12 @@ import { Loader2, LogIn } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-import { login } from '@/common/api/auth.api'
+import { getRole, login } from '@/common/api/auth.api'
 import { isApiError } from '@/common/api/http'
 import { AuthNotice, AuthShell } from '@/common/components/AuthShell'
 import { PasswordField, TextField } from '@/common/components/FormTextField'
 import { Button } from '@/common/ui/button'
+import { parseRoleResponse, postLoginRedirectTarget } from '@/common/auth/roles'
 
 interface LoginForm {
   email: string
@@ -15,9 +16,11 @@ interface LoginForm {
 
 type LoginFormErrors = Partial<Record<keyof LoginForm, string>>
 
-/** Flash message set by RegisterPage after a successful signup. */
+/** Flash message set by RegisterPage; `from` set by route guards. */
 interface LoginLocationState {
   notice?: string
+  /** Internal path to return to after a successful login (e.g. /admin). */
+  from?: string
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -38,8 +41,7 @@ function validate(form: LoginForm): LoginFormErrors {
 export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const registrationNotice =
-    (location.state as LoginLocationState | null)?.notice ?? null
+  const { notice: registrationNotice, from } = (location.state as LoginLocationState | null) ?? {}
 
   const [form, setForm] = useState<LoginForm>({ email: '', password: '' })
   const [errors, setErrors] = useState<LoginFormErrors>({})
@@ -66,7 +68,20 @@ export default function LoginPage() {
       // Persists the access token in localStorage; the refresh_token cookie
       // is stored by the browser automatically.
       await login(form.email.trim(), form.password)
-      navigate('/', { replace: true })
+
+      // Fetch the role so we can route to the correct dashboard. Falls back
+      // to the requested path (or home) if the role request fails — a failed
+      // role fetch must never grant access to a protected route.
+      let target: string
+      try {
+        const { data } = await getRole()
+        const role = parseRoleResponse(data)
+        target = postLoginRedirectTarget(role, from)
+      } catch {
+        target = from && from.startsWith('/') && !from.startsWith('//') ? from : '/'
+      }
+
+      navigate(target, { replace: true })
     } catch (error) {
       if (isApiError(error)) setFormError(error.message)
       else setFormError('Something went wrong. Please try again.')

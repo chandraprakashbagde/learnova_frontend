@@ -36,10 +36,11 @@ import {
   type VerificationHistoryEntry,
 } from '@/features/admin/api/adminVerification.api'
 import { formatDateTime } from '@/features/admin/lib/format'
+import {
+  MIN_REJECTION_REASON_LENGTH,
+  validateRejectionReason,
+} from '@/features/admin/lib/verificationRules'
 import { cn } from '@/common/lib/utils'
-
-/** Minimum rejection reason length enforced client-side. */
-const MIN_REASON_LENGTH = 4
 
 export interface DocumentReviewPanelProps {
   document: VerificationDocument
@@ -150,15 +151,15 @@ export function DocumentReviewPanel({ document, onStatusChanged }: DocumentRevie
 
   const handleReject = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const reason = rejectReason.trim()
-    if (reason.length < MIN_REASON_LENGTH) {
-      setActionError(`Please provide a rejection reason (at least ${MIN_REASON_LENGTH} characters).`)
+    const reasonError = validateRejectionReason(rejectReason)
+    if (reasonError) {
+      setActionError(reasonError)
       return
     }
     setSubmitting(true)
     resetActionFeedback()
     try {
-      await rejectVerificationDocument(document.doc_id, { reason })
+      await rejectVerificationDocument(document.doc_id, { reason: rejectReason.trim() })
       setSuccessMessage('Document rejected.')
       setRejectOpen(false)
       setRejectReason('')
@@ -420,7 +421,7 @@ export function DocumentReviewPanel({ document, onStatusChanged }: DocumentRevie
                 aria-describedby="reject-reason-hint"
               />
               <p id="reject-reason-hint" className="text-xs text-muted-foreground">
-                Minimum {MIN_REASON_LENGTH} characters.
+                Minimum {MIN_REJECTION_REASON_LENGTH} characters.
               </p>
             </div>
             <DialogFooter>
@@ -430,7 +431,7 @@ export function DocumentReviewPanel({ document, onStatusChanged }: DocumentRevie
               <Button
                 type="submit"
                 variant="outline"
-                disabled={submitting || rejectReason.trim().length < MIN_REASON_LENGTH}
+                disabled={submitting || validateRejectionReason(rejectReason) !== null}
                 className="border-destructive/40 text-destructive hover:bg-destructive/10"
               >
                 {submitting ? <Loader2 aria-hidden="true" className="size-4 animate-spin" /> : <XCircle aria-hidden="true" className="size-4" />}

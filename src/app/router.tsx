@@ -8,8 +8,10 @@ import LoginPage from '@/pages/LoginPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import PlaceholderPage, { type PlaceholderPageProps } from '@/pages/PlaceholderPage'
 import RegisterPage from '@/pages/RegisterPage'
-import StudentPage from '@/pages/StudentPage'
-import TeacherPage from '@/pages/TeacherPage'
+import ForStudentsPage from '@/pages/ForStudentsPage'
+import ForTeachersPage from '@/pages/ForTeachersPage'
+import StudentDashboardPage from '@/pages/StudentDashboardPage'
+import TeacherDashboardPage from '@/pages/TeacherDashboardPage'
 
 import AdminGuard from '@/features/admin/components/AdminGuard'
 import AdminDashboardPage from '@/features/admin/pages/AdminDashboardPage'
@@ -79,8 +81,13 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'student', element: <StudentPage /> },
-      { path: 'teacher', element: <TeacherPage /> },
+      /*
+       * Public marketing pages. The role-scoped dashboards live at
+       * /student and /teacher (see the guarded routes below), so the
+       * informational "journey" pages moved here.
+       */
+      { path: 'for-students', element: <ForStudentsPage /> },
+      { path: 'for-teachers', element: <ForTeachersPage /> },
       { path: 'courses', element: <ExploreCoursesPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <RegisterPage /> },
@@ -94,9 +101,25 @@ export const router = createBrowserRouter([
   },
   {
     /*
-     * Admin panel — guarded by AdminGuard, which verifies the bearer token
-     * via GET /auth/me and requires the Admin role before rendering the
-     * AdminLayout shell (the layout hosts the <Outlet/> for these children).
+     * Teacher dashboard — guarded by the reusable RoleGuard, which verifies
+     * the bearer token via GET /auth/role and requires the Teacher role.
+     */
+    path: '/teacher',
+    element: <TeacherDashboardPage />,
+  },
+  {
+    /*
+     * Student dashboard — guarded by the reusable RoleGuard, which verifies
+     * the bearer token via GET /auth/role and requires the Student role.
+     */
+    path: '/student',
+    element: <StudentDashboardPage />,
+  },
+  {
+    /*
+     * Admin panel — guarded by AdminGuard (a thin wrapper over RoleGuard),
+     * which requires the Admin role before rendering the AdminLayout shell
+     * (the layout hosts the <Outlet/> for these children).
      */
     path: '/admin',
     element: <AdminGuard />,

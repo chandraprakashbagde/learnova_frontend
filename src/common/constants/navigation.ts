@@ -16,8 +16,8 @@ export interface NavLinkItem {
 export const NAV_LINKS: NavLinkItem[] = [
   { label: 'Home', to: '/', end: true },
   { label: 'Explore Courses', to: '/courses' },
-  { label: 'For Students', to: '/student' },
-  { label: 'For Teachers', to: '/teacher' },
+  { label: 'For Students', to: '/for-students' },
+  { label: 'For Teachers', to: '/for-teachers' },
   { label: 'About Us', to: '/about' },
 ]
 
@@ -38,15 +38,15 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     title: 'Explore',
     links: [
       { label: 'All Courses', to: '/courses' },
-      { label: 'For Students', to: '/student' },
-      { label: 'For Teachers', to: '/teacher' },
+      { label: 'For Students', to: '/for-students' },
+      { label: 'For Teachers', to: '/for-teachers' },
       { label: 'About Us', to: '/about' },
     ],
   },
   {
     title: 'Student Resources',
     links: [
-      { label: 'Start Learning', to: '/student' },
+      { label: 'Start Learning', to: '/for-students' },
       { label: 'Explore Categories', to: '/courses' },
       { label: 'How It Works', to: '/#how-it-works' },
       { label: 'Student Login', to: '/login' },
@@ -55,7 +55,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: 'Teacher Resources',
     links: [
-      { label: 'Start Teaching', to: '/teacher' },
+      { label: 'Start Teaching', to: '/for-teachers' },
       { label: 'Create an Account', to: '/signup' },
       { label: 'Teaching Guidelines', to: '/about' },
       { label: 'Teacher Login', to: '/login' },

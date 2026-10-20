@@ -45,10 +45,10 @@ export default function NotFoundPage() {
         </div>
 
         <nav aria-label="Quick links" className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
-          <Link to="/student" className="font-semibold text-primary underline-offset-4 hover:underline">
+          <Link to="/for-students" className="font-semibold text-primary underline-offset-4 hover:underline">
             For Students
           </Link>
-          <Link to="/teacher" className="font-semibold text-secondary underline-offset-4 hover:underline">
+          <Link to="/for-teachers" className="font-semibold text-secondary underline-offset-4 hover:underline">
             <Presentation aria-hidden="true" className="mr-1 inline size-4" />
             For Teachers
           </Link>

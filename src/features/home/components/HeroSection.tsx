@@ -33,7 +33,7 @@ const HERO_ROLES = [
     description: 'Share your knowledge, create courses, and inspire the next generation.',
     icon: Presentation,
     ctaLabel: 'Start Teaching',
-    to: '/teacher',
+    to: '/for-teachers',
     image: {
       src: teacherCardJpg,
       avifSrc: teacherCardAvif,
@@ -79,13 +79,13 @@ export function HeroSection() {
             {/* Quick journey links */}
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm lg:justify-start">
               <Link
-                to="/student"
+                to="/for-students"
                 className="font-semibold text-primary underline-offset-4 transition-colors hover:underline"
               >
                 I'm here to learn →
               </Link>
               <Link
-                to="/teacher"
+                to="/for-teachers"
                 className="font-semibold text-secondary underline-offset-4 transition-colors hover:underline"
               >
                 I'm here to teach →

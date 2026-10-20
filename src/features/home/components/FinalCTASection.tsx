@@ -34,7 +34,7 @@ export function FinalCTASection() {
                 size="lg"
                 className="w-full bg-white text-primary shadow-lg shadow-black/15 hover:bg-white/90 sm:w-auto"
               >
-                <Link to="/student">
+                <Link to="/for-students">
                   Start Learning
                   <ArrowRight aria-hidden="true" className="size-4" />
                 </Link>
@@ -45,7 +45,7 @@ export function FinalCTASection() {
                 variant="outline"
                 className="w-full border-white/40 bg-transparent text-white hover:border-white hover:bg-white/10 hover:text-white sm:w-auto"
               >
-                <Link to="/teacher">Become a Teacher</Link>
+                <Link to="/for-teachers">Become a Teacher</Link>
               </Button>
             </div>
           </div>
